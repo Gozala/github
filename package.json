@@ -1,0 +1,33 @@
+{
+    "name": "github",
+    "description": "Library for accessing GitHub API.",
+    "version": "0.1",
+    "keywords": ["github", "gist"],
+    "maintainers": [
+        {
+            "name": "Irakli Gozalishvili",
+            "email": "rfobic@gmail.com",
+            "web": "http://rfobic.wordpress.com/"
+        }
+    ],
+    "contributors": [
+        {
+            "name": "Irakli Gozalishvili",
+            "email": "rfobic@gmail.com",
+            "web": "http://rfobic.wordpress.com/"
+        }
+    ],
+    "bugs": { "web": "http://github.com/Gozala/github/issues/" },
+    "licenses": [
+        { "type": "GPL" }
+    ],
+    "repositories": [
+        {
+            "type": "git",
+            "url": "git://github.com/Gozala/github.git",
+        }
+    ],
+    "directories": {
+        "lib": "lib"
+    }
+}

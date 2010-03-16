@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table xmlns="http://query.yahooapis.com/v1/schema/table.xsd" https="true">
+    <meta>
+        <author>Irakli Gozalishvili</author>
+        <documentationURL></documentationURL>
+        <sampleQuery><![CDATA[
+            SELECT content FROM github.gist WHERE repo = "{repo}" user = "{username}" AND token = "{token}"
+        ]]></sampleQuery>
+        <sampleQuery><![CDATA[
+            INSERT INTO github.gist (
+                user,
+                token,
+                name,
+                description:
+                content,
+                _public
+            ) VALUES (
+                "{username}",
+                "{token}",
+                "test.md",
+                "YQL"
+                "Gist created using [YQL](https://developer.yahoo.com/yql/).",
+                "false"
+            )
+        ]]></sampleQuery>
+        <sampleQuery><![CDATA[
+            UPDATE github.gist SET
+                content="Updated file content",
+                description="YQL <3 Gist"
+            WHERE
+                user="{username}"
+            AND
+                token="{token}"
+            AND
+                name="test.md"
+            AND
+                repo="{GistID}"
+        ]]></sampleQuery>
+        <sampleQuery><![CDATA[
+            DELETE FROM github.gist WHERE
+                user = "{username}"
+            AND
+                token = "{token}"
+            AND
+                repo = "{GistID}"
+        ]]></sampleQuery>
+    </meta>
+    <bindings>
+        <select itemPath="result.gists" produces="JSON">
+            <urls>
+                <url>https://gist.github.com/{repo}.txt</url>
+            </urls>
+            <inputs>
+                <key id="repo" type="xs:string" paramType="variable" required="true"/>
+                <key id="user" type="xs:string" paramType="variable" required="false"/>
+                <key id="token" type="xs:string" paramType="variable" required="false"/>
+            </inputs>
+            <execute><![CDATA[
+                function encode(data) {
+                    var message = "";
+                    for (var key in data) {
+                        message += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(data[key]);
+                    }
+                    return message.substring(1);
+                }
+
+                var data = { login: user };
+                if (token) data.token = token;
+                response.object = {
+                    gists: [{
+                        repo: repo,
+                        content: y.rest("https://gist.github.com/" + repo + ".txt")
+                            .header("Content-type","application/x-www-form-urlencoded")
+                            .header("Accept", "text/javascript, text/json")
+                            .post(encode(data))
+                            .response
+                    }]
+                 };
+            ]]></execute>
+        </select>
+        <insert itemPath="" produces="JSON">
+            <urls>
+                <url>http://gist.github.com/gists/</url>
+            </urls>
+            <inputs>
+                <key id="user" type="xs:string" paramType="variable" required="true"/>
+                <key id="token" type="xs:string" paramType="variable" required="true"/>
+                <key id="name" type="xs:string" paramType="variable" required="true"/>
+                <key id="content" type="xs:string" paramType="variable" required="true"/>
+                <key id="_public" type="xs:boolean" paramType="variable" required="false"/>
+                <key id="description" type="xs:string" paramType="variable" required="false"/>
+            </inputs>
+            <execute><![CDATA[
+                var seperator = "˚";
+                function encode(data) {
+                    var message = "";
+                    for (var key in data) {
+                        message += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(data[key]);
+                    }
+                    return message.substring(1);
+                }
+                var data = {
+                    "login": user,
+                    "token": token
+                }
+                if (_public !== "true") data.action_button = "private";
+
+                var names = name.split(seperator);
+                var contents = content.split(seperator);
+                for (var i = 0, l = Math.min(names.length, contents.length, 10); i < l; i ++) {
+                    var key = "gistfile" + (i + 1);
+                    data["file_name[" + key + "]"] = names[i];
+                    data["file_ext[" + key + "]"] = undefined;
+                    data["file_contents[" + key + "]"] = contents[i];
+                }
+
+                var html = request
+                    .header("Content-type","application/x-www-form-urlencoded")
+                    .header("Accept", "text/javascript, text/json")
+                    .post(encode(data))
+                    .response;
+                var repo = /gist: (\w*) /.exec(html)[1];
+                if (description) {
+                    y.rest("https://gist.github.com/gists/" + repo + "/update_description")
+                        .header("Content-type","application/x-www-form-urlencoded")
+                        .header("Accept", "text/javascript, text/json")
+                        .post(encode({
+                            "login": user,
+                            "token": token,
+                            "description": description
+                        }));
+                }
+                response.object = { repo: repo };
+            ]]></execute>
+        </insert>
+        <update itemPath="" produces="JSON">
+            <urls>
+                <url>http://gist.github.com/gists/</url>
+            </urls>
+            <inputs>
+                <key id="repo" type="xs:string" paramType="variable" required="true"/>
+                <key id="user" type="xs:string" paramType="variable" required="true"/>
+                <key id="token" type="xs:string" paramType="variable" required="true"/>
+                <value id="name" type="xs:string" paramType="variable" required="false"/>
+                <value id="content" type="xs:string" paramType="variable" required="false"/>
+                <value id="description" type="xs:string" paramType="variable" required="false"/>
+            </inputs>
+            <execute><![CDATA[
+                var result = response.object = { repo: repo }
+                var seperator = "˚";
+                function encode(data) {
+                    var message = "";
+                    for (var key in data) {
+                        message += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(data[key]);
+                    }
+                    return message.substring(1);
+                }
+                if (name && content) {
+                    var data = {
+                        login: user,
+                        token: token,
+                        _method: "put"
+                    }
+
+                    if (name && content) {
+                        var names = name.split(seperator);
+                        var contents = content.split(seperator);
+                        for (var i = 0, l = Math.min(names.length, contents.length, 10); i < l; i ++) {
+                            var key = names[i];
+                            data["file_name[" + key + "]"] = key;
+                            data["file_ext[" + key + "]"] = key.substr(key.lastIndexOf("."));
+                            if (contents[i]) data["file_contents[" + key + "]"] = contents[i];
+                        }
+                        // getting editing session hash
+                        var hash = result.hash = y.rest("https://gist.github.com/gists/" + repo + "/edit?" + encode({ login: user, token: token }))
+                            .header("Accept", "text/javascript, text/json")
+                            .get()
+                            .response
+                            .match(/<form[^>]*action="\/gists\/(\d*)"[^>]*method="post"/)[1];
+                        // updating files
+                        var html = y.rest("https://gist.github.com/gists/" + hash)
+                            .header("Content-type","application/x-www-form-urlencoded")
+                            .header("Accept", "text/javascript, text/json")
+                            .post(encode(data))
+                            .response;
+                    }
+                }
+
+                if (description) {
+                    y.rest("https://gist.github.com/gists/" + repo + "/update_description")
+                        .header("Content-type","application/x-www-form-urlencoded")
+                        .header("Accept", "text/javascript, text/json")
+                        .post(encode({
+                            "login": user,
+                            "token": token,
+                            "description": description
+                        }));
+                }
+            ]]></execute>
+        </update>
+        <delete itemPath="" produces="JSON">
+            <urls>
+                <url>https://gist.github.com/delete/{repo}</url>
+            </urls>
+            <inputs>
+                <key id="repo" type="xs:string" paramType="path" required="true"/>
+                <key id="user" type="xs:string" paramType="variable" required="true"/>
+                <key id="token" type="xs:string" paramType="variable" required="true"/>
+            </inputs>
+            <execute><![CDATA[
+                function encode(data) {
+                    var message = "";
+                    for (var key in data) {
+                        message += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(data[key]);
+                    }
+                    return message.substring(1);
+                }
+                var data = {
+                    "login": user,
+                    "token": token,
+                    "_method": "delete"
+                };
+                request
+                    .header("Content-type","application/x-www-form-urlencoded")
+                    .header("Accept", "text/javascript, text/json")
+                    .post(encode(data))
+                    .response;
+            ]]></execute>
+        </delete>
+    </bindings>
+</table>

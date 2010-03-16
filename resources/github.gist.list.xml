@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<table xmlns="http://query.yahooapis.com/v1/schema/table.xsd" https="true">
+    <meta>
+        <author>Irakli Gozalishvili</author>
+        <documentationURL></documentationURL>
+        <sampleQuery><![CDATA[
+            SELECT * FROM github.gist WHERE user = "{username}" AND token = "{token}"
+        ]]></sampleQuery>
+    </meta>
+    <bindings>
+        <select itemPath="result.gists" produces="JSON">
+            <urls>
+                <url>http://gist.github.com/mine/</url>
+            </urls>
+            <inputs>
+                <key id="user" type="xs:string" paramType="variable" required="true"/>
+                <key id="token" type="xs:string" paramType="variable" required="false"/>
+            </inputs>
+            <execute><![CDATA[
+                var result;
+                function encode(data) {
+                    var message = "";
+                    for (var key in data) {
+                        message += "&" + encodeURIComponent(key) + "=" + encodeURIComponent(data[key]);
+                    }
+                    return message.substring(1);
+                }
+                if (token) {
+                    var data = {
+                        login: user,
+                        token: token
+                    };
+                    var url = "http://gist.github.com/mine/";
+                    var match = /file\s*(private|public)[\s\S]*?gist:\s*(\w*)[\s\S]*?<span[^>]*>(\w*)[\s\S]*?date[^\/]*title=["']([\w-:\s]*)/g;
+                    var index = 1;
+                    var gists = [];
+                    function fetch(index) {
+                        if (index) data.page = index;
+                        collect(y.rest(url)
+                            .header("Content-type","application/x-www-form-urlencoded")
+                            .header("Accept", "text/javascript, text/json")
+                            .post(encode(data))
+                            .response);
+                    }
+                    function collect(html) {
+                        var gist, success;
+                        while (gist = match.exec(html)) {
+                            success = true;
+                            gists.push({
+                                "description": gist[3] || null,
+                                "repo": gist[2],
+                                "public": ((gist[1] == "public") ? true : false),
+                                "created_at": gist[4]
+                            });
+                        }
+                        if (success) fetch(++index);
+                    }
+                    fetch();
+                    response.object = { gists: gists };
+                } else {
+                    response.object = y.xmlToJson(y.rest("http://gist.github.com/api/v1/json/gists/" + user).get().response).json;
+                }
+            ]]></execute>
+        </select>
+    </bindings>
+</table>

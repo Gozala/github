@@ -24,12 +24,12 @@
     "repositories": [
         {
             "type": "git",
-            "url": "git://github.com/Gozala/github.git",
+            "url": "git://github.com/Gozala/github.git"
         }
     ],
     "directories": {
         "lib": "lib"
-    }
+    },
     "provides": [
         {
             "ep": "command",
@@ -43,7 +43,7 @@
                 }
             ],
             "description": "says hello to it",
-            "pointer": "lib/gihub/bespin#hello"
+            "pointer": "lib/github/bespin#hello"
         }
     ]
 }

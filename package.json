@@ -11,7 +11,7 @@
         }
     ],
     "contributors": [
-        {
+    {
             "name": "Irakli Gozalishvili",
             "email": "rfobic@gmail.com",
             "web": "http://rfobic.wordpress.com/"
@@ -30,4 +30,20 @@
     "directories": {
         "lib": "lib"
     }
+    "provides": [
+        {
+            "ep": "command",
+            "name": "gist",
+            "params":
+            [
+                {
+                    "name": "action",
+                    "type": "text",
+                    "description": "list files relative to current file, or start with /projectname"
+                }
+            ],
+            "description": "says hello to it",
+            "pointer": "lib/gihub/bespin#hello"
+        }
+    ]
 }

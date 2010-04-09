@@ -44,6 +44,24 @@
             ],
             "description": "says hello to it",
             "pointer": "lib/github/bespin#hello"
+        },
+        {
+            "ep": "command",
+            "name": "listgist",
+            "params": [
+                {
+                    "name": "user",
+                    "type": "text",
+                    "description": "Github user name (case sensitive)"
+                },
+                {
+                    "name": "token",
+                    "type": "text",
+                    "description": "Githunb API token (optional)"
+                }
+            ],
+            "description": "List of published gists for a user",
+            "pointer": "lib/github/bespin#list"
         }
     ]
 }

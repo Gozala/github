@@ -31,9 +31,17 @@
         "lib": "lib"
     },
     "dependencies": {
-        "settings": "0.0"
+        "settings": "0.0",
+        "matcher": "0.0",
+        "command_line": "0.0"
     },
     "provides": [
+        {
+            "ep": "typehint",
+            "name": "Gist",
+            "description": "A method of selecting an existing gists",
+            "pointer": "lib/github/bespin#gists"
+        },
         {
             "ep": "setting",
             "name": "github-user",
@@ -94,6 +102,20 @@
             ],
             "aliases": ["gist it", "gistit"],
             "pointer": "lib/github/bespin#create"
+        },
+        {
+            "ep": "command",
+            "name": "gist open",
+            "description": "creates new buffer with a gist in it",
+            "params": [
+                {
+                    "name": "repo",
+                    "!type": "Gist",
+                    "type": "text",
+                    "description": "Gist ID"
+                }
+            ],
+            "pointer": "lib/github/bespin#open"
         }
     ]
 }

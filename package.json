@@ -30,24 +30,30 @@
     "directories": {
         "lib": "lib"
     },
+    "dependencies": {
+        "settings": "0.0"
+    },
     "provides": [
         {
-            "ep": "command",
-            "name": "gist",
-            "params":
-            [
-                {
-                    "name": "action",
-                    "type": "text",
-                    "description": "list files relative to current file, or start with /projectname"
-                }
-            ],
-            "description": "says hello to it",
-            "pointer": "lib/github/bespin#hello"
+            "ep": "setting",
+            "name": "github-user",
+            "description": "Github user name (Case sensitive)",
+            "type": "text"
+        },
+        {
+            "ep": "setting",
+            "name": "github-token",
+            "description": "Github API Token (https://github.com/account)",
+            "type": "text"
         },
         {
             "ep": "command",
-            "name": "listgist",
+            "name": "gist",
+            "description": "Commands for creating / editing / listing github gist."
+        },
+        {
+            "ep": "command",
+            "name": "gist list",
             "params": [
                 {
                     "name": "user",
@@ -60,8 +66,34 @@
                     "description": "Githunb API token (optional)"
                 }
             ],
+            "aliases": ["gist ls", "gist dir"],
             "description": "List of published gists for a user",
             "pointer": "lib/github/bespin#list"
+        },
+        {
+            "ep": "command",
+            "name": "gist create",
+            "description": "publishes selection / active buffer as a gist",
+            "params": [
+                {
+                    "name": "user",
+                    "type": "text",
+                    "description": "Github user name (case sensitive)"
+                },
+                {
+                    "name": "token",
+                    "type": "text",
+                    "description": "Githunb API token (optional)"
+                },
+                {
+                    "name": "private",
+                    "type": "boolean",
+                    "description": "If true private gist will be created",
+                    "defaultValue": false
+                }
+            ],
+            "aliases": ["gist it", "gistit"],
+            "pointer": "lib/github/bespin#create"
         }
     ]
 }

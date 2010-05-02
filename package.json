@@ -1,7 +1,7 @@
 {
     "name": "github",
     "description": "Library for accessing GitHub API.",
-    "version": "0.1",
+    "version": "0.1.1",
     "keywords": ["github", "gist"],
     "maintainers": [
         {

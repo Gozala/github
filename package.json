@@ -1,121 +1,23 @@
-{
-    "name": "github",
-    "description": "Library for accessing GitHub API.",
-    "version": "0.1",
-    "keywords": ["github", "gist"],
-    "maintainers": [
-        {
-            "name": "Irakli Gozalishvili",
-            "email": "rfobic@gmail.com",
-            "web": "http://rfobic.wordpress.com/"
-        }
-    ],
-    "contributors": [
-    {
-            "name": "Irakli Gozalishvili",
-            "email": "rfobic@gmail.com",
-            "web": "http://rfobic.wordpress.com/"
-        }
-    ],
-    "bugs": { "web": "http://github.com/Gozala/github/issues/" },
-    "licenses": [
-        { "type": "GPL" }
-    ],
-    "repositories": [
-        {
-            "type": "git",
-            "url": "git://github.com/Gozala/github.git"
-        }
-    ],
-    "directories": {
-        "lib": "lib"
-    },
-    "dependencies": {
-        "settings": "0.0",
-        "matcher": "0.0",
-        "command_line": "0.0"
-    },
-    "provides": [
-        {
-            "ep": "typehint",
-            "name": "Gist",
-            "description": "A method of selecting an existing gists",
-            "pointer": "lib/github/bespin#gists"
-        },
-        {
-            "ep": "setting",
-            "name": "github-user",
-            "description": "Github user name (Case sensitive)",
-            "type": "text"
-        },
-        {
-            "ep": "setting",
-            "name": "github-token",
-            "description": "Github API Token (https://github.com/account)",
-            "type": "text"
-        },
-        {
-            "ep": "command",
-            "name": "gist",
-            "description": "Commands for creating / editing / listing github gist."
-        },
-        {
-            "ep": "command",
-            "name": "gist list",
-            "params": [
-                {
-                    "name": "user",
-                    "type": "text",
-                    "description": "Github user name (case sensitive)"
-                },
-                {
-                    "name": "token",
-                    "type": "text",
-                    "description": "Githunb API token (optional)"
-                }
-            ],
-            "aliases": ["gist ls", "gist dir"],
-            "description": "List of published gists for a user",
-            "pointer": "lib/github/bespin#list"
-        },
-        {
-            "ep": "command",
-            "name": "gist create",
-            "description": "publishes selection / active buffer as a gist",
-            "params": [
-                {
-                    "name": "user",
-                    "type": "text",
-                    "description": "Github user name (case sensitive)"
-                },
-                {
-                    "name": "token",
-                    "type": "text",
-                    "description": "Githunb API token (optional)"
-                },
-                {
-                    "name": "private",
-                    "type": "boolean",
-                    "description": "If true private gist will be created",
-                    "defaultValue": false
-                }
-            ],
-            "aliases": ["gist it", "gistit"],
-            "pointer": "lib/github/bespin#create"
-        },
-        {
-            "ep": "command",
-            "name": "gist open",
-            "description": "creates new buffer with a gist in it",
-            "params": [
-                {
-                    "name": "repo",
-                    "!type": "Gist",
-                    "type": "text",
-                    "description": "Gist ID"
-                }
-            ],
-            "pointer": "lib/github/bespin#open"
-        }
-    ]
+{ "name": "github"
+, "description": "Library for accessing GitHub API."
+, "version": "0.2.0"
+, "keywords": ["github", "gist"]
+, "contributors":
+  [ "Irakli Gozalishvili <rfobic@gmail.com> (http://jeditoolkit.com)" ]
+, "repository":
+  { "type": "git"
+  , "url": "git://github.com/Gozala/github.git"
+  }
+, "bugs": { "web": "http://github.com/Gozala/github/issues/" }
+, "directories":
+  { "doc": "./doc"
+  , "man": "./man"
+  , "lib": "./lib"
+  , "test": "./test"
+  }
+, "licenses" :
+  [ { "type" : "MPL 1.1/LGPL 2.1/GPL 2.0"
+    , "url" : "http://www.mozilla.org/MPL/"
+    }
+  ]
 }
